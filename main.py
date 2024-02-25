@@ -27,7 +27,8 @@
 import pandas as pd
 
 cmc = pd.read_csv('Car Maintenance Costs.csv')
-
+# If the column in 'cmc' is called 'Model' (with capital 'M'):
+cmc = cmc.rename(columns={'Model': 'model','Year':'year'})  # Make them consistent
 # print(cmc.head())
 #      Make      Model  Year  MaintenanceCostYearly
 # 0     BMW         x3  2017                 607.20
@@ -38,32 +39,36 @@ cmc = pd.read_csv('Car Maintenance Costs.csv')
 
 fuelPricesandConversions = pd.read_excel('Fuel Prices and Conversions.xlsx')
 
-# print(fuelPricesandConversions.head())
-#      Fuel    Cost
-# 0  Petrol  1.4251
-# 1  Diesel  1.5090
 
-# Inside of "Used Car Data" folder is a collection of datasets with model,year,price,transmission,mileage,fuelType,tax,mpg,engineSize
-
-# I will start by reading the data from the folder
 carDatasetNames = ['audi', 'bmw', 'ford', 'hyundai', 'merc', 'skoda', 'toyota', 'vauxhall', 'vw']
 
 carDatasets = []
 for car in carDatasetNames:
     carDatasets.append(pd.read_csv(f'Used Car Data (incl mpg)/{car}.csv'))
 
-# print(carDatasets[0].head())
+
 # Compile all cars into one dataset
 allCars = pd.concat(carDatasets, ignore_index=True)
 
-# print(allCars.head())
+
 # Extend dataset with maintenance costs
-# If the column in 'cmc' is called 'Model' (with capital 'M'):
-cmc = cmc.rename(columns={'Model': 'model','Year':'year'})  # Make them consistent
 allCars = allCars.merge(cmc, how='left', left_on=['model', 'year'], right_on=['model', 'year'])
-allCars.insert(1, 'fuel_cost', allCars['MaintenanceCostYearly'].fillna(0))
-allCars.insert(1, 'maintenance_cost', allCars['MaintenanceCostYearly'].fillna(0))
-allCars.insert(1, 'total_cost', allCars['MaintenanceCostYearly'].fillna(0))
+
+# Data Cleaning
+allCars['Make'] = allCars['Make'].str.title()
+
+# Pre-fill with defaults
+allCars['fuel_cost'] = 0.0
+allCars['maintenance_cost'] = 0.0
+allCars['total_cost'] = 0.0
+
+# Missing Maintenance Handling
+allCars.fillna({'MaintenanceCostYearly': 0}, inplace=True)  
+
+
+# Reorder columns 
+desired_order = ['Make', 'model', 'year', 'transmission', 'fuelType', 'mileage', 'price', 'engineSize', 'mpg', 'tax', 'maintenance_cost', 'fuel_cost', 'MaintenanceCostYearly', 'total_cost']  # Specify your desired order
+allCars = allCars.reindex(columns=desired_order)
 
 finalCars = {}
 def calculate_cost(car_index, fuel_price, years):
@@ -74,22 +79,28 @@ def calculate_cost(car_index, fuel_price, years):
     car_df = allCars.iloc[car_index].copy()
     # Calculate the fuel cost
     car_df['fuel_cost'] = (8000 / car_df['mpg']) * fuel_price * years
+    allCars.at[car_index, 'fuel_cost'] = car_df['fuel_cost']
     
     # Calculate the maintenance cost
     car_df['maintenance_cost'] = car_df['MaintenanceCostYearly'] * years
+    allCars.at[car_index, 'maintenance_cost'] = car_df['maintenance_cost']
 
     # Calculate the total cost
     car_df['total_cost'] = car_df['price'] + car_df['tax'] + car_df['fuel_cost'] + car_df['maintenance_cost']
+    allCars.at[car_index, 'total_cost'] = car_df['total_cost']
 
     # Assign the calculated values back to the dataframe
     finalCars[car_df['model']] = car_df['total_cost']
+
+    return car_df
     
 print(allCars.head())
 fuel_price = 1.4251
 years = int(input("Enter the number of years to estimate costs for: "))
 
 for i in range(len(allCars)):
-    calculate_cost(i,fuel_price, years)  # No fuel_price argument anymore
+    updated_car_df = calculate_cost(i, fuel_price, years)
+
 
 # Sort results for better presentation
 sorted_results = sorted(finalCars.items(), key=lambda item: item[1]) 

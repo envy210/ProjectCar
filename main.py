@@ -29,6 +29,8 @@ import pandas as pd
 cmc = pd.read_csv('Car Maintenance Costs.csv')
 # If the column in 'cmc' is called 'Model' (with capital 'M'):
 cmc = cmc.rename(columns={'Model': 'model','Year':'year'})  # Make them consistent
+cmc['model'] = cmc['model'].str.strip().str.lower()
+
 # print(cmc.head())
 #      Make      Model  Year  MaintenanceCostYearly
 # 0     BMW         x3  2017                 607.20
@@ -50,9 +52,9 @@ for car in carDatasetNames:
 # Compile all cars into one dataset
 allCars = pd.concat(carDatasets, ignore_index=True)
 
-
+allCars['model'] = allCars['model'].str.strip().str.lower()
 # Extend dataset with maintenance costs
-allCars = allCars.merge(cmc, how='left', left_on=['model', 'year'], right_on=['model', 'year'])
+allCars = allCars.merge(cmc, how='inner', left_on=['model', 'year'], right_on=['model', 'year'])
 
 # Data Cleaning
 allCars['Make'] = allCars['Make'].str.title()

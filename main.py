@@ -39,8 +39,10 @@ cmc['model'] = cmc['model'].str.strip().str.lower()
 # 3    audi        RS4  2015                 859.98
 # 4     bmw   5 SERIES  2004                1264.16
 
-fuelPricesandConversions = pd.read_excel('Fuel Prices and Conversions.xlsx')
-
+# Read the fuel prices and conversions
+fuelPricesandConversions = pd.read_excel('Fuel Prices and Conversions.xlsx', sheet_name='Fuel Costs')
+#gallon to litre conversion
+fuelPricesandConversions2 = pd.read_excel('Fuel Prices and Conversions.xlsx', sheet_name='Conversions')
 
 carDatasetNames = ['audi', 'bmw', 'ford', 'hyundai', 'merc', 'skoda', 'toyota', 'vauxhall', 'vw']
 
@@ -72,15 +74,26 @@ allCars.fillna({'MaintenanceCostYearly': 0}, inplace=True)
 desired_order = ['Make', 'model', 'year', 'transmission', 'fuelType', 'mileage', 'price', 'engineSize', 'mpg', 'tax', 'maintenance_cost', 'fuel_cost', 'MaintenanceCostYearly', 'total_cost']  # Specify your desired order
 allCars = allCars.reindex(columns=desired_order)
 
-def calculate_cost(car_index, fuel_price, years):
+def calculate_cost(car_index, gallon, years):
     # Calculate the total estimated cost of buying a car and any costs associated with using it over the course of 5 years.
     # You should assume that the annual mileage of the car will be 8000 miles.
     # Display the results for each considered car variation and create recommendations for the cheapest options
 
     car_df = allCars.iloc[car_index].copy()
     # Calculate the fuel cost
-    car_df['fuel_cost'] = (8000 / car_df['mpg']) * fuel_price * years
-    allCars.at[car_index, 'fuel_cost'] = car_df['fuel_cost']
+    if car_df['fuelType'] == 'Petrol':
+        petrol_row_index = fuelPricesandConversions[fuelPricesandConversions['Fuel'] == 'Diesel'].index[0]
+        petrol_price = fuelPricesandConversions.loc[petrol_row_index, 'Cost']
+        car_df['fuel_cost'] = (8000 / car_df['mpg']) * petrol_price * gallon * years
+        allCars.at[car_index, 'fuel_cost'] = car_df['fuel_cost']
+    elif car_df['fuelType'] == 'Diesel':
+        diesel_row_index = fuelPricesandConversions[fuelPricesandConversions['Fuel'] == 'Diesel'].index[0]
+        diesel_price = fuelPricesandConversions.loc[diesel_row_index, 'Cost']
+        car_df['fuel_cost'] = (8000 / car_df['mpg']) * diesel_price * gallon * years
+        allCars.at[car_index, 'fuel_cost'] = car_df['fuel_cost']
+    else:
+        car_df['fuel_cost'] = (8000 / car_df['mpg']) * gallon * years
+        allCars.at[car_index, 'fuel_cost'] = car_df['fuel_cost'] 
     
     # Calculate the maintenance cost
     car_df['maintenance_cost'] = car_df['MaintenanceCostYearly'] * years
@@ -93,11 +106,15 @@ def calculate_cost(car_index, fuel_price, years):
     return car_df
     
 print(allCars.head())
-fuel_price = 1.4251
 years = int(input("Enter the number of years to estimate costs for: "))
 
+# liters in gallon
+print(fuelPricesandConversions2)
+gallon = fuelPricesandConversions2.loc[0, 'Litres']
+print(gallon)
+
 for i in range(len(allCars)):
-    updated_car_df = calculate_cost(i, fuel_price, years)
+    updated_car_df = calculate_cost(i, gallon, years)
 
 
 # Sort results for better presentation

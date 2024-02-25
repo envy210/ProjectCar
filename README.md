@@ -57,9 +57,6 @@ We welcome contributions! To submit changes:
 2. Create a feature branch.
 3. Make your changes and submit a pull request.
 
-## License 
-
-This project is licensed under the MIT License. See the LICENSE: LICENSE file for details.
 
 **Important:**
 

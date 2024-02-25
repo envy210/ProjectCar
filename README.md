@@ -1,5 +1,9 @@
 **README.md**
 
+
+***NOTE: Make sure to clean up data prior to using it i.e. strip(), lower()***
+***Use something google collab to help see what happens to data in real time***
+
 # Car Cost Analysis Project
 
 This repository contains a Python project that helps users estimate the total cost of ownership for various car models. 

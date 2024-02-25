@@ -72,7 +72,6 @@ allCars.fillna({'MaintenanceCostYearly': 0}, inplace=True)
 desired_order = ['Make', 'model', 'year', 'transmission', 'fuelType', 'mileage', 'price', 'engineSize', 'mpg', 'tax', 'maintenance_cost', 'fuel_cost', 'MaintenanceCostYearly', 'total_cost']  # Specify your desired order
 allCars = allCars.reindex(columns=desired_order)
 
-finalCars = {}
 def calculate_cost(car_index, fuel_price, years):
     # Calculate the total estimated cost of buying a car and any costs associated with using it over the course of 5 years.
     # You should assume that the annual mileage of the car will be 8000 miles.
@@ -91,9 +90,6 @@ def calculate_cost(car_index, fuel_price, years):
     car_df['total_cost'] = car_df['price'] + car_df['tax'] + car_df['fuel_cost'] + car_df['maintenance_cost']
     allCars.at[car_index, 'total_cost'] = car_df['total_cost']
 
-    # Assign the calculated values back to the dataframe
-    finalCars[car_df['model']] = car_df['total_cost']
-
     return car_df
     
 print(allCars.head())
@@ -105,7 +101,7 @@ for i in range(len(allCars)):
 
 
 # Sort results for better presentation
-sorted_results = sorted(finalCars.items(), key=lambda item: item[1]) 
+sorted_results = sorted(allCars[['model', 'total_cost']].itertuples(index=False), key=lambda item: item[1]) 
 
 # Display top 3
 print("\nTop 3 Most Cost-Effective Cars:")

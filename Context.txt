@@ -1,0 +1,29 @@
+# The Challenge
+
+# Adam wants to buy his first car but he doesn't have a lot of
+# money and he is looking for the most cost-effective option
+# on the market.
+
+# He is thinking long term and considering not only the cost
+# of buying the car, but also the cost of using it over the
+# course of 5 years.
+
+# Help him decide by creating a list of car brand and models
+# with their cost estimates.
+
+# The Data
+# The following data is provided. You should be able to complete the challenge using it:
+# . A collection of datasets with car prices, their tax cost and mpg (miles per gallon) by the car brand and
+# specifications
+# . A dataset with car maintenance costs by the brand, model and year
+# . A look-up table with petrol and diesel costs and Gallon to Litre conversion
+
+# Outcomes: Easier Version
+# Calculate the total estimated cost of buying a car and any costs associated with using it over the course of 5
+# years.
+# You should assume that the annual mileage of the car will be 8000 miles.
+# Display the results for each considered car variation and create recommendations for the cheapest options
+
+Outcomes: More Difficult Version
+Calculate the total estimated cost of buying a car and any costs associated with using it taking the annual mileage and period of time (in years) used for the estimate as inputs from the user
+Display the results for each consider car variation and create recommendations for the cheapest options

@@ -66,7 +66,7 @@ allCars.insert(1, 'maintenance_cost', allCars['MaintenanceCostYearly'].fillna(0)
 allCars.insert(1, 'total_cost', allCars['MaintenanceCostYearly'].fillna(0))
 
 finalCars = {}
-def calculate_cost(car_index, fuel_price, years=5):
+def calculate_cost(car_index, fuel_price, years):
     # Calculate the total estimated cost of buying a car and any costs associated with using it over the course of 5 years.
     # You should assume that the annual mileage of the car will be 8000 miles.
     # Display the results for each considered car variation and create recommendations for the cheapest options
@@ -85,6 +85,18 @@ def calculate_cost(car_index, fuel_price, years=5):
     finalCars[car_df['model']] = car_df['total_cost']
     
 print(allCars.head())
+fuel_price = 1.4251
+years = int(input("Enter the number of years to estimate costs for: "))
+
 for i in range(len(allCars)):
-    calculate_cost(i, 1.4251)
-print(finalCars)
+    calculate_cost(i,fuel_price, years)  # No fuel_price argument anymore
+
+# Sort results for better presentation
+sorted_results = sorted(finalCars.items(), key=lambda item: item[1]) 
+
+# Display top 3
+print("\nTop 3 Most Cost-Effective Cars:")
+for model, total_cost in sorted_results[:3]:
+    print(f"{model}: Total Cost (5 years): £{total_cost:.2f}")
+
+allCars.to_csv('car_cost_analysis_all_columns.csv', index=False) 

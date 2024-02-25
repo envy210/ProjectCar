@@ -28,12 +28,12 @@ This repository contains a Python project that helps users estimate the total co
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/envy210/ProjectCar.git
    ```
 
 2. **Install dependencies:**
    ```bash
-   cd your-repo-name
+   cd ProjectCar
    pip install -r requirements.txt 
    ```
    (Create a requirements.txt file listing the packages: pandas, numpy, etc.)

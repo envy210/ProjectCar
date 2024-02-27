@@ -71,6 +71,7 @@ def calculate_cost(car_index, gallon, years, mileage):
     
     # Calculate the maintenance cost
     car_df['maintenance_cost'] = car_df['MaintenanceCostYearly'] * years
+    car_df['tax'] = car_df['tax'] * years
     allCars.at[car_index, 'maintenance_cost'] = car_df['maintenance_cost']
 
     # Calculate the total cost
